@@ -1,0 +1,64 @@
+import { useState } from 'react';
+
+interface ShortenedUrl {
+  originalUrl: string;
+  shortenedUrl: string;
+}
+
+const UrlShortener = () => {
+  const [originalUrl, setOriginalUrl] = useState('');
+  const [shortenedUrls, setShortenedUrls] = useState<ShortenedUrl[]>([]);
+  const [copied, setCopied] = useState(false);
+
+  const handleShortenUrl = () => {
+    if (!originalUrl) return;
+    const shortenedUrl = `https://short.url/${Math.random().toString(36).substr(2, 5)}`;
+    setShortenedUrls([...shortenedUrls, { originalUrl, shortenedUrl }]);
+    setOriginalUrl('');
+  };
+
+  const handleCopyUrl = (shortenedUrl: string) => {
+    navigator.clipboard.writeText(shortenedUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-4 pt-6 md:p-6 lg:p-12 bg-white rounded shadow-md">
+      <h1 className="text-3xl font-bold text-gray-900">URL Shortener</h1>
+      <div className="flex flex-col mt-4">
+        <input
+          type="text"
+          value={originalUrl}
+          onChange={(e) => setOriginalUrl(e.target.value)}
+          placeholder="Enter URL"
+          className="p-2 pl-10 text-sm text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 w-full"
+        />
+        <button
+          onClick={handleShortenUrl}
+          className="mt-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+        >
+          Shorten URL
+        </button>
+      </div>
+      <div className="mt-4">
+        {shortenedUrls.map((url, index) => (
+          <div key={index} className="flex justify-between items-center py-2">
+            <span className="text-sm text-gray-700">{url.originalUrl}</span>
+            <div className="flex items-center">
+              <span className="text-sm text-gray-700">{url.shortenedUrl}</span>
+              <button
+                onClick={() => handleCopyUrl(url.shortenedUrl)}
+                className="ml-2 py-1 px-2 bg-green-500 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600"
+              >
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default UrlShortener;
